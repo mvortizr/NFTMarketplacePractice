@@ -14,12 +14,18 @@ export default function Home() {
   const [nfts, setNfts] = useState([])
   const [loadingState, setLoadingState] = useState('not-loaded')
 
+  let rpcEndpoint = null
+
+  if (process.env.NEXT_PUBLIC_WORKSPACE_URL) {
+    rpcEndpoint = process.env.NEXT_PUBLIC_WORKSPACE_URL
+  }
+
   useEffect(()=>{
     loadNFTs()
   },[])
 
   async function loadNFTs() { //where we call our smart contract and fetch nfts
-    const provider = new ethers.providers.JsonRpcProvider()
+    const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint)
     const tokenContract = new ethers.Contract(nftaddress,NFT.abi,provider)
     const marketContract = new ethers.Contract(nftmarketaddress,Market.abi,provider)
     const data = await marketContract.fetchMarketItems() //call all unsold market items
